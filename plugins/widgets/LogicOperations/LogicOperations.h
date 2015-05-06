@@ -160,11 +160,18 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     break;
             }
 
-            for (int i = 0; i < objectCount; i++) {
+            for (int i = 0; i < container->object(1)->points(0).size(); i++) {
+                QPointF point = container->object(1)->points(0).at(i);
+                container->object(0)->addPoint(point.toPoint());
+            }
+
+            /*for (int i = 0; i < objectCount; i++) {
                 GObject *obj = container->object(i);
+                //curframe?
+                obj->points(0)
                 QRectF objectRect = obj->boundingRect();
                 obj->move(5, 5);
-            }
+            }*/
 
             /*
 
