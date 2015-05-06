@@ -14,6 +14,7 @@
 #include "ui_LogicOperations.h"
 
 enum { LEFT, CENTERX, RIGHT, TOP, CENTERY, BOTTOM, GAPSX, GAPSY};
+enum { SUM, DIFF, OR, XOR };
 
 class LogicOperations:public QWidget, public LogicOperationsInterface, public InterfacePlugin
 {
@@ -23,42 +24,47 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
 	public:
 
-		virtual void createPlugin(QObject *parent, QString idParent,plugin::PluginsManager *manager)
+        virtual void createPlugin(QObject *parent, QString idParent, plugin::PluginsManager *manager)
         {
 			mainWin = MAINWINDOW(parent);
-			if(mainWin!=0)
+            if (mainWin!=0)
 			{
                 painter = PAINTWIDGETINTERFACE(mainWin->getPaintWidget());
                 realPainter = RPWINTEFACE(painter->getRealPaintWidget());
                 selection = GSRINTEFACE(realPainter->getSelection());
 
                 LogicOperationsWindow = new QDockWidget(mainWin);
-                LogicOperationsWindow->setWindowTitle( tr( "Align And Distribute" ) );
+                LogicOperationsWindow->setWindowTitle( tr( "Logic Operations" ) );
                 this->setParent( LogicOperationsWindow );
                 LogicOperationsWindow->setWidget(this);
                 mainWin->addDockWidget( Qt::RightDockWidgetArea, LogicOperationsWindow );
 
                 QMenu* objectMenu = mainWin->getObjectMenu();
-                QAction* showLogicOperations = objectMenu->addAction(  tr( "&Align and Distribute..." ) );
+                QAction* showLogicOperations = objectMenu->addAction(  tr( "&Logic Operations..." ) );
                 objectMenu->addSeparator();
                 showLogicOperations->setIcon( QIcon( ":/main/images/dialog-align-and-distribute.png" ) );
                 connect( showLogicOperations, SIGNAL( triggered( bool ) ), this, SLOT( showLogicOperations() ) );
 
-                manager->addPlugins(this, "Align And Distribute");
+                manager->addPlugins(this, "Logic Operations");
             }
 		}
 
 		virtual QString getName()const
 		{
-            return "Align And Distribute";
+            return "Logic Operations";
 		}
 
         LogicOperations( plugin::PluginsManager *manager )
         {
 
             alignSignalMapper = new QSignalMapper(this);
+
             distributeSignalMapper = new QSignalMapper(this);
+            logicSignalMapper = new QSignalMapper(this);
             ui.setupUi( this );
+
+            ui.AlignGroupBox->setVisible(false);
+            ui.DistributeGroupBox->setVisible(false);
 
             connect(alignSignalMapper, SIGNAL(mapped(int)),this, SLOT(align(int)));
             connect(distributeSignalMapper, SIGNAL(mapped(int)),this, SLOT(distribute(int)));
@@ -93,6 +99,18 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
             connect(ui.DistributeButton_4, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
             distributeSignalMapper->setMapping(ui.DistributeButton_8, GAPSY);
             connect(ui.DistributeButton_8, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
+
+            //
+            connect(logicSignalMapper, SIGNAL(mapped(int)),this, SLOT(logicOperate(int)));
+
+            logicSignalMapper->setMapping(ui.toolButton, SUM);
+            connect(ui.toolButton, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
+            logicSignalMapper->setMapping(ui.toolButton_2, DIFF);
+            connect(ui.toolButton_2, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
+            logicSignalMapper->setMapping(ui.toolButton_3, OR);
+            connect(ui.toolButton_3, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
+            logicSignalMapper->setMapping(ui.toolButton_4, XOR);
+            connect(ui.toolButton_4, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
         }
 
         virtual ~LogicOperations()
@@ -109,6 +127,36 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
 
     private slots:
+
+        void logicOperate(int mode) {
+            container = selection->getSelectedAsGContainer();
+            int objectCount = container->countObjects();
+            if(objectCount != 2) return;
+            QRect rect = selection->getPosition();
+            bool isX = true;
+            qreal x = rect.left(),
+                y = rect.top(),
+                coeff = 0, // 0 - левая/верхняя сторона  |  0.5 - центр  |  1 - правая/нижняя сторона
+                selectionW = rect.width(),
+                selectionH = rect.height();
+            switch(mode){
+                case SUM:
+                    coeff = 0.5;
+                    break;
+                case DIFF:
+                    coeff = 1;
+                    break;
+                case OR:
+                    isX = false;
+                    break;
+                case XOR:
+                    isX = false; coeff = 0.5;
+                    break;
+            }
+            // вызываем перерисовку и сохраняем в историю изменений
+            selection->emitChanged();
+            selection->emitStateChanged("LogicOperate");
+        }
 
         void align(int direction){
             container = selection->getSelectedAsGContainer();
@@ -256,6 +304,8 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
         QSignalMapper *alignSignalMapper;
         QSignalMapper *distributeSignalMapper;
+
+        QSignalMapper *logicSignalMapper;
 
 };
 
