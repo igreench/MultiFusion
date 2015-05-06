@@ -621,7 +621,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QToolButton" name="toolButton_4">
+         <widget class="QToolButton" name="toolButton">
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -647,7 +647,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="toolButton_3">
+         <widget class="QToolButton" name="toolButton_2">
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -673,7 +673,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="toolButton_2">
+         <widget class="QToolButton" name="toolButton_3">
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -699,7 +699,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QToolButton" name="toolButton">
+         <widget class="QToolButton" name="toolButton_4">
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -774,8 +774,8 @@
   <tabstop>DistributeButton_8</tabstop>
  </tabstops>
  <resources>
-  <include location="LogicOperations.qrc"/>
   <include location="../AlignAndDistribute/AlignAndDistribute.qrc"/>
+  <include location="LogicOperations.qrc"/>
  </resources>
  <connections/>
 </ui>
