@@ -1,5 +1,5 @@
 # #####################################################################
-# AlignAndDistribute MultiFusion build script. Mangush Vadim, 2015
+# LogicOperations MultiFusion build script. Lipkin Evgenii, 2015
 # #####################################################################
 TEMPLATE = lib
 TARGET = LogicOperations

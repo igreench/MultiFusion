@@ -160,8 +160,28 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     break;
             }
 
+            /*
             for (int i = 0; i < container->object(1)->points(0).size(); i++) {
                 QPointF point = container->object(1)->points(0).at(i);
+                container->object(0)->addPoint(point.toPoint());
+            }*/
+
+            //QPolygonF poly = container->object(1)->points(0);
+            //poly.united(container->object(1)->points(0))
+
+            qDebug() << "0: " << container->objectName(0);
+            qDebug() << "1: " << container->objectName(1);
+
+            QPolygonF poly = container->object(0)->points(0).united(container->object(1)->points(0));
+
+            container->object(0)->points(0).clear();
+            //container->object(1)->points(0).clear();
+
+
+            //container->object(0)->points(0) = poly;
+
+            for (int i = 0; i < poly.size(); i++) {
+                QPointF point = poly.at(i);
                 container->object(0)->addPoint(point.toPoint());
             }
 
