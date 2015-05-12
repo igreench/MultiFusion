@@ -133,7 +133,7 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
         void logicOperate(int mode) {
             container = selection->getSelectedAsGContainer();
             int objectCount = container->countObjects();
-            if(objectCount != 2) return;
+            //if(objectCount != 2) return;
             QRect rect = selection->getPosition();
             /*bool isX = true;
             qreal x = rect.left(),
@@ -160,30 +160,39 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     break;
             }
 
+            for (int i = 0; i < objectCount; i++) {
+                GObject *obj = container->object(0);
+                QPolygonF poly = obj->points(0);
+                obj->points(0).clear();
+
+                /*for( int j = obj->points(0).size() - 1; j >= 0; j-- ) {
+                    obj->deletePoint(j);
+                }*/
+
+                if( poly.size() < 4 ) {
+                    qDebug() << "EXCEPTION";
+                    return;
+                }
+
+                int countSplinePoints = ( ( poly.size() - 1 ) / 3 ) * 3;
+
+                for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
+                    obj->addPoint(poly.at(j - 1).toPoint());
+                    //path.cubicTo( props.points[i], props.points[i + 1], props.points[i + 2] );
+                }
+            }
+
             /*
-            for (int i = 0; i < container->object(1)->points(0).size(); i++) {
-                QPointF point = container->object(1)->points(0).at(i);
-                container->object(0)->addPoint(point.toPoint());
-            }*/
-
-            //QPolygonF poly = container->object(1)->points(0);
-            //poly.united(container->object(1)->points(0))
-
             qDebug() << "0: " << container->objectName(0);
             qDebug() << "1: " << container->objectName(1);
-
             QPolygonF poly = container->object(0)->points(0).united(container->object(1)->points(0));
-
             container->object(0)->points(0).clear();
-            //container->object(1)->points(0).clear();
-
-
-            //container->object(0)->points(0) = poly;
-
             for (int i = 0; i < poly.size(); i++) {
                 QPointF point = poly.at(i);
                 container->object(0)->addPoint(point.toPoint());
-            }
+            }*/
+
+            ////////////////////
 
             /*for (int i = 0; i < objectCount; i++) {
                 GObject *obj = container->object(i);
