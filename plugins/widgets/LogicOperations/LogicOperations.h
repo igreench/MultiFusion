@@ -8,6 +8,7 @@
 #include "./../../../interfaces/MainWindowInterface.h"
 #include "./../../../interfaces/LogicOperationsInterface.h"
 #include "./../../../paintWidget/GContainer.h"
+#include "./../../../paintWidget/GVectorFigure.h"
 #include "./../../../interfaces/GSRInterface.h"
 #include "./../../../interfaces/RPWInterface.h"
 #include "./../../../interfaces/PaintWidgetInterface.h"
@@ -160,26 +161,28 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     break;
             }
 
-            for (int i = 0; i < objectCount; i++) {
-                GObject *obj = container->object(0);
+            /*
+
+            for (int i = objectCount - 1; i >= 0; i--) {
+                GObject *obj = container->object(i);
                 QPolygonF poly = obj->points(0);
-                obj->points(0).clear();
+                //obj->depoints(0).clear();
 
-                /*for( int j = obj->points(0).size() - 1; j >= 0; j-- ) {
-                    obj->deletePoint(j);
-                }*/
+                obj->deleteFrame(0);
 
-                if( poly.size() < 4 ) {
-                    qDebug() << "EXCEPTION";
-                    return;
-                }
+                //container->remove(i);
 
                 int countSplinePoints = ( ( poly.size() - 1 ) / 3 ) * 3;
 
+                //GObject *newObj;
                 for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
                     obj->addPoint(poly.at(j - 1).toPoint());
                     //path.cubicTo( props.points[i], props.points[i + 1], props.points[i + 2] );
                 }
+
+                obj->addFrame(0, true);
+
+                //container->add(newObj);
             }
 
             /*
@@ -190,6 +193,38 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
             for (int i = 0; i < poly.size(); i++) {
                 QPointF point = poly.at(i);
                 container->object(0)->addPoint(point.toPoint());
+            }*/
+
+            ////////////////////
+
+
+
+            //
+
+
+
+            int countLayers = painter->countLayers();
+            int countFigures;
+            for (int i = countLayers - 1; i >= 0; i-- ) {
+                if(painter->isContainsFrame(i)) {
+                    countFigures = painter->countFigures(i);
+                    for (int j = countFigures - 1; j >= 0; j--) {
+                        //view.addPlaceDrag("Figure",i,j);
+                        //selection
+                        painter->deleteFigure(i, j);
+                    }
+                }
+            }
+
+
+            //
+/*
+            GObject* ob =container->object(0);
+            if (!ob->isContainer()) {
+                //GVectorFigure* v = GVECTORFIGURE(ob);
+
+                //v->points(0).clear();
+                //return (v->isSpline())?1:0;
             }*/
 
             ////////////////////
