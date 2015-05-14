@@ -161,14 +161,14 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     break;
             }
 
-            /*
+
 
             for (int i = objectCount - 1; i >= 0; i--) {
                 GObject *obj = container->object(i);
                 QPolygonF poly = obj->points(0);
-                //obj->depoints(0).clear();
+                //obj->de points(0).clear();
 
-                obj->deleteFrame(0);
+                //obj->deleteFrame(0);
 
                 //container->remove(i);
 
@@ -180,7 +180,9 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                     //path.cubicTo( props.points[i], props.points[i + 1], props.points[i + 2] );
                 }
 
-                obj->addFrame(0, true);
+                //obj->addFrame(0, true);
+
+                //container->add(obj, true);
 
                 //container->add(newObj);
             }
@@ -198,23 +200,33 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
             ////////////////////
 
 
+            for (int i = objectCount - 1; i >= 0; i--) {
+                painter->deleteFigure(painter->layer(), i);
+            }
 
-            //
-
-
-
-            int countLayers = painter->countLayers();
+            /*int countLayers = painter->countLayers();
             int countFigures;
             for (int i = countLayers - 1; i >= 0; i-- ) {
                 if(painter->isContainsFrame(i)) {
                     countFigures = painter->countFigures(i);
                     for (int j = countFigures - 1; j >= 0; j--) {
-                        //view.addPlaceDrag("Figure",i,j);
-                        //selection
                         painter->deleteFigure(i, j);
                     }
                 }
+            }*/
+
+            /*
+
+            GObject *obj = container->object(0);
+            QPolygonF poly = obj->points(0);
+            int countSplinePoints = ( ( poly.size() - 1 ) / 3 ) * 3;
+            for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
+                obj->addPoint(poly.at(j - 1).toPoint());
             }
+            container->add(obj, true);
+            */
+
+            //painter->getRealPaintWidget()->
 
 
             //
@@ -294,7 +306,7 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
 
             // что бы рамка изменила свой размер имитируем отпускание кнопки мыши по ней
-            selection->mouseRelease(Qt::LeftButton,rect.center(),Qt::NoModifier);
+            //selection->mouseRelease(Qt::LeftButton,rect.center(),Qt::NoModifier);
             // вызываем перерисовку и сохраняем в историю изменений
             selection->emitChanged();
             selection->emitStateChanged("LogicOperate");
