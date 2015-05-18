@@ -7,8 +7,11 @@
 #include "./../../../pluginTool/InterfacePlugin.h"
 #include "./../../../interfaces/MainWindowInterface.h"
 #include "./../../../interfaces/LogicOperationsInterface.h"
+#include "./../../../paintWidget/RPW.h"
+#include "./../../../paintWidget/GObject.h"
 #include "./../../../paintWidget/GContainer.h"
 #include "./../../../paintWidget/GVectorFigure.h"
+#include "./../../../interfaces/GObjectInterface.h"
 #include "./../../../interfaces/GSRInterface.h"
 #include "./../../../interfaces/RPWInterface.h"
 #include "./../../../interfaces/PaintWidgetInterface.h"
@@ -16,8 +19,8 @@
 
 #include <QDebug>
 
-enum { LEFT, CENTERX, RIGHT, TOP, CENTERY, BOTTOM, GAPSX, GAPSY};
 enum { SUM, DIFF, OR, XOR };
+
 
 class LogicOperations:public QWidget, public LogicOperationsInterface, public InterfacePlugin
 {
@@ -34,6 +37,7 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 			{
                 painter = PAINTWIDGETINTERFACE(mainWin->getPaintWidget());
                 realPainter = RPWINTEFACE(painter->getRealPaintWidget());
+                realPaintWidget = REALPAINTWIDGET(painter->getRealPaintWidget());
                 selection = GSRINTEFACE(realPainter->getSelection());
 
                 LogicOperationsWindow = new QDockWidget(mainWin);
@@ -60,50 +64,9 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
         LogicOperations( plugin::PluginsManager *manager )
         {
 
-            alignSignalMapper = new QSignalMapper(this);
-
-            distributeSignalMapper = new QSignalMapper(this);
             logicSignalMapper = new QSignalMapper(this);
             ui.setupUi( this );
 
-            ui.AlignGroupBox->setVisible(false);
-            ui.DistributeGroupBox->setVisible(false);
-
-            connect(alignSignalMapper, SIGNAL(mapped(int)),this, SLOT(align(int)));
-            connect(distributeSignalMapper, SIGNAL(mapped(int)),this, SLOT(distribute(int)));
-
-            alignSignalMapper->setMapping(ui.AlignButton_01, LEFT);
-            connect(ui.AlignButton_01, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-            alignSignalMapper->setMapping(ui.AlignButton_02, CENTERX);
-            connect(ui.AlignButton_02, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-            alignSignalMapper->setMapping(ui.AlignButton_03, RIGHT);
-            connect(ui.AlignButton_03, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-            alignSignalMapper->setMapping(ui.AlignButton_04, TOP);
-            connect(ui.AlignButton_04, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-            alignSignalMapper->setMapping(ui.AlignButton_05, CENTERY);
-            connect(ui.AlignButton_05, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-            alignSignalMapper->setMapping(ui.AlignButton_06, BOTTOM);
-            connect(ui.AlignButton_06, SIGNAL(clicked()), alignSignalMapper, SLOT(map()));
-
-            distributeSignalMapper->setMapping(ui.DistributeButton_1, LEFT);
-            connect(ui.DistributeButton_1, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_2, CENTERX);
-            connect(ui.DistributeButton_2, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_3, RIGHT);
-            connect(ui.DistributeButton_3, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_5, TOP);
-            connect(ui.DistributeButton_5, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_6, CENTERY);
-            connect(ui.DistributeButton_6, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_7, BOTTOM);
-            connect(ui.DistributeButton_7, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-
-            distributeSignalMapper->setMapping(ui.DistributeButton_4, GAPSX);
-            connect(ui.DistributeButton_4, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-            distributeSignalMapper->setMapping(ui.DistributeButton_8, GAPSY);
-            connect(ui.DistributeButton_8, SIGNAL(clicked()), distributeSignalMapper, SLOT(map()));
-
-            //
             connect(logicSignalMapper, SIGNAL(mapped(int)),this, SLOT(logicOperate(int)));
 
             logicSignalMapper->setMapping(ui.toolButton, SUM);
@@ -136,32 +99,20 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
             int objectCount = container->countObjects();
             //if(objectCount != 2) return;
             QRect rect = selection->getPosition();
-            /*bool isX = true;
-            qreal x = rect.left(),
-                y = rect.top(),
-                coeff = 0, // 0 - левая/верхняя сторона  |  0.5 - центр  |  1 - правая/нижняя сторона
-                selectionW = rect.width(),
-                selectionH = rect.height();*/
             switch(mode){
                 case SUM:
-                    //coeff = 0.5;
                     qDebug() << "SUM";
                     break;
                 case DIFF:
-                    //coeff = 1;
                     qDebug() << "DIFF";
                     break;
                 case OR:
-                    //isX = false;
                     qDebug() << "OR";
                     break;
                 case XOR:
-                    //isX = false; coeff = 0.5;
                     qDebug() << "XOR";
                     break;
             }
-
-
 
             for (int i = objectCount - 1; i >= 0; i--) {
                 GObject *obj = container->object(i);
@@ -182,6 +133,22 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                 //obj->addPoint(QPoint(0, 0));
             }
 
+            /*GObjectInterface *g = container->copyObject();
+            g->addPoint(QPoint(0, 0));
+            g->addPoint(QPoint(10, 0));
+            g->addPoint(QPoint(10, 10));
+            g->addPoint(QPoint(0, 10));
+            painter->deleteSelected();*/
+            //container->add(GOBJECT(g));
+            //selection->addSelected(g);
+            //GObject *obj = container->object(0);
+            //realPaintWidget->addNewObject(GOBJECT(g));
+            realPaintWidget->addNewObject(container->object(0));
+
+
+            //L_Polygon p;
+
+            //container->add(GOBJECT(p));
 
             //GObject *obj = container->object(0);
             //obj->deletePoint()
@@ -213,17 +180,96 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
             ////////////////////
 
-            int countFigures;
+            /*int countFigures;
             if(painter->isContainsFrame(painter->layer())) {
                 countFigures = painter->countFigures(painter->layer());
                 for (int j = countFigures - 1; j >= 0; j--) {
                     painter->deleteFigure(painter->layer(), j);
                 }
-            }
+            }*/
 
 
-            GObject *obj = container->object(0);
-            container->add(obj, true);
+            //         GObject *obj = container->object(0);
+
+
+            //GContainer *c = GCONTAINER( realPainter->selection.selected( 0 ) );
+            //painterlayers[painter.currentLayer]->remove( painter.layers[painter.currentLayer]->objectIndex( c ) );
+
+            /*int count = realPaintWidget->getLayers()[realPaintWidget->getCurrentLayer()]->countObjects();
+            for( int i = count - 1; i >= 0; i-- )
+            {
+                if( realPaintWidget->getSelection().isInside( realPaintWidget->getLayers()[realPaintWidget->getCurrentLayer()]->object( i ) ) ) {
+                    //c.add( realPaintWidget->getLayers()[realPaintWidget->currentLayer]->object( i ) );
+                    realPaintWidget->getLayers()[realPaintWidget->getCurrentLayer()]->remove(i);
+                }
+            }*/
+
+
+            //painter->deleteSelected();
+
+
+            //GVectorFigure figure(points, false, true, painter->frame());
+            //GVectorFigure *figure = new GVectorFigure();
+
+
+            /*for (int i = objectCount - 1; i >= 0; i--) {
+                GObject *obj = container->object(i);
+
+
+                int countSplinePoints = ( ( obj->points(painter->frame()).size() - 1 ) / 3 ) * 3;
+                for( int j = countSplinePoints; j >= 0; j--) {
+                    obj->deletePoint(j);
+                }
+
+                obj->addPoint(QPoint(0, 0));
+                obj->addPoint(QPoint(10, 0));
+                obj->addPoint(QPoint(10, 10));
+                obj->addPoint(QPoint(0, 10));
+            }*/
+
+            //container->getObjects()->
+            /*container->addPoint(QPoint(0, 0));
+            container->addPoint(QPoint(10, 0));
+            container->addPoint(QPoint(10, 10));
+            container->addPoint(QPoint(0, 10));*/
+
+
+
+            /*GVectorFigure *figure = new GVectorFigure();
+            figure->addPoint(QPoint(0, 0));
+            figure->addPoint(QPoint(10, 0));
+            figure->addPoint(QPoint(10, 10));
+            figure->addPoint(QPoint(0, 10));
+            container->add(GOBJECT(figure), true);*/
+
+            /*container->addPoint(QPoint(0, 0));
+            container->addPoint(QPoint(10, 0));
+            container->addPoint(QPoint(0, 10));
+            container->addPoint(QPoint(10, 10));*/
+
+            FigureToolInterface::FigureInfo info;
+
+            info.closed = false;
+            info.spline = false;
+            info.points << QPointF( 0.0, 0.0 );
+            info.name = "Polygon";
+
+            //FigureToolInterface tool = FIGURETOOL(realPainter->getCurrentTool());
+            //tool.figure() << info;
+
+            //        FigureToolInterface
+
+
+            //realPaintWidget->addNewObject();
+            //GObjectInterface * o = GObject::create(0, QPoint(0, 0), "Polygon" , painter->frame());
+
+//            container->add( GOBJECT(GObject::create(realPainter->getCurrentTool(), QPoint(0, 0), "Polygon" , painter->frame())), true );
+    //		layers[currentLayer]->add( GOBJECT(o), true );
+
+            //selection->setSelected( o );
+            //selection->setIsNewFigure(true);
+
+            /*
 
             /*for (int i = objectCount - 1; i >= 0; i--) {
                 painter->deleteFigure(painter->layer(), i);
@@ -274,200 +320,9 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                 obj->move(5, 5);
             }*/
 
-            /*
-
-            // сделать массив индексов выделения и массив координат фигур, по которому будет сортировка
-            int* indicesArray = new int[objectCount];
-            qreal* figureSizes = new qreal[objectCount];
-            for(int i=0;i<objectCount;i++){
-                indicesArray[i] = i;
-
-                QRectF objectRect = container->object(i)->boundingRect();
-                if(isX){
-                    figureSizes[i] = objectRect.x() + objectRect.width() * coeff;
-                    sum -= objectRect.width();
-                }else{
-                    figureSizes[i] = objectRect.y() + objectRect.height() * coeff;
-                    sum -= objectRect.height();
-                }
-            }
-
-            // отсортировать индексы так, что бы фигуры, вызываемые из выделения по индексам, были по порядку
-            for(int i=0;i<objectCount-1;i++){
-                int min = i;
-                for(int j=i;j<objectCount;j++)
-                    if(figureSizes[ indicesArray[j] ] < figureSizes[ indicesArray[min] ])
-                        min = j;
-                if(min != i){
-                    //swap index[i],index[min]
-                    int tmp = indicesArray[i];
-                    indicesArray[i] = indicesArray[min];
-                    indicesArray[min] = tmp;
-                }
-            }
-
-            // по порядку расставляем объкты выделения
-            if( ! isGaps )
-                for(int i=1;i<objectCount-1;i++){
-                    GObject *obj = container->object(indicesArray[i]);
-                    if(isX)
-                        obj->move(figureSizes[ indicesArray[0] ] + i*difference - figureSizes[ indicesArray[i] ],0);
-                    else
-                        obj->move(0,figureSizes[ indicesArray[0] ] + i*difference - figureSizes[ indicesArray[i] ]);
-                }
-            else{
-                int prevObjIndex = 0;
-                for(int i=1;i<objectCount-1;i++){
-                    GObject *obj = container->object(indicesArray[i]);
-                    if(isX)
-                        obj->move(container->object(indicesArray[prevObjIndex])->boundingRect().right() + difference - obj->boundingRect().x(),0);
-                    else
-                        obj->move(0,container->object(indicesArray[prevObjIndex])->boundingRect().bottom() + difference - obj->boundingRect().y());
-                    prevObjIndex = i;
-                }
-            }
-
-            */
-
-
-            // что бы рамка изменила свой размер имитируем отпускание кнопки мыши по ней
             //selection->mouseRelease(Qt::LeftButton,rect.center(),Qt::NoModifier);
-            // вызываем перерисовку и сохраняем в историю изменений
             selection->emitChanged();
             selection->emitStateChanged("LogicOperate");
-        }
-
-        void align(int direction){
-            container = selection->getSelectedAsGContainer();
-            int objectCount = container->countObjects();
-            if(objectCount < 2) return;
-            QRect rect = selection->getPosition();
-            bool isX = true;
-            qreal x = rect.left(),
-                y = rect.top(),
-                coeff = 0, // 0 - левая/верхняя сторона  |  0.5 - центр  |  1 - правая/нижняя сторона
-                selectionW = rect.width(),
-                selectionH = rect.height();
-            switch(direction){
-                case CENTERX:
-                    coeff = 0.5; break;
-                case RIGHT:
-                    coeff = 1; break;
-                case TOP:
-                    isX = false; break;
-                case CENTERY:
-                    isX = false; coeff = 0.5; break;
-                case BOTTOM:
-                    isX = false; coeff = 1; break;
-            }
-            for(int i=0;i<objectCount;i++){
-                GObject *obj = container->object(i);
-                QRectF objectRect = obj->boundingRect();
-                if(isX)
-                    obj->move((x + selectionW * coeff) - (objectRect.x() + objectRect.width() * coeff) , 0);
-                else
-                    obj->move(0 , (y + selectionH * coeff) - (objectRect.y() + objectRect.height() * coeff));
-            }
-            // что бы рамка изменила свой размер имитируем отпускание кнопки мыши по ней
-            selection->mouseRelease(Qt::LeftButton,rect.center(),Qt::NoModifier);
-            // вызываем перерисовку и сохраняем в историю изменений
-            selection->emitChanged();
-            selection->emitStateChanged("Align");
-        }
-
-        void distribute(int direction){
-            container = selection->getSelectedAsGContainer();
-            int objectCount = container->countObjects();
-            if(objectCount < 3) return;
-            bool isX = true,
-                isGaps = false;
-            qreal coeff = 0, // 0 - левая/верхняя сторона  |  0.5 - центр  |  1 - правая/нижняя сторона
-                sum = 0; // сумма ширин/высот объектов выделения
-            QRect rect = selection->getPosition();
-            switch(direction){
-                case CENTERX:
-                    coeff = 0.5; break;
-                case RIGHT:
-                    coeff = 1; break;
-                case TOP:
-                    isX = false; break;
-                case CENTERY:
-                    isX = false; coeff = 0.5; break;
-                case BOTTOM:
-                    isX = false; coeff = 1; break;
-                case GAPSX:
-                    isGaps = true; coeff = 0.5; sum = rect.width(); break;
-                case GAPSY:
-                    isGaps = true; isX = false; coeff = 0.5; sum = rect.height(); break;
-            }
-
-            // сделать массив индексов выделения и массив координат фигур, по которому будет сортировка
-            int* indicesArray = new int[objectCount];
-            qreal* figureSizes = new qreal[objectCount];
-            for(int i=0;i<objectCount;i++){
-                indicesArray[i] = i;
-
-                QRectF objectRect = container->object(i)->boundingRect();
-                if(isX){
-                    figureSizes[i] = objectRect.x() + objectRect.width() * coeff;
-                    sum -= objectRect.width();
-                }else{
-                    figureSizes[i] = objectRect.y() + objectRect.height() * coeff;
-                    sum -= objectRect.height();
-                }
-            }
-
-            // отсортировать индексы так, что бы фигуры, вызываемые из выделения по индексам, были по порядку
-            for(int i=0;i<objectCount-1;i++){
-                int min = i;
-                for(int j=i;j<objectCount;j++)
-                    if(figureSizes[ indicesArray[j] ] < figureSizes[ indicesArray[min] ])
-                        min = j;
-                if(min != i){
-                    //swap index[i],index[min]
-                    int tmp = indicesArray[i];
-                    indicesArray[i] = indicesArray[min];
-                    indicesArray[min] = tmp;
-                }
-            }
-
-            // считаем расстояние между 1й и последней фигурами
-            qreal distance;
-            if( ! isGaps )
-                distance = figureSizes[ indicesArray[objectCount-1] ]
-                    - figureSizes[ indicesArray[0] ];
-            else
-                distance = sum;
-
-            // делим расстояние на количество промежутков между фигурами
-            qreal difference = distance / (objectCount-1);
-
-            // по порядку расставляем объкты выделения
-            if( ! isGaps )
-                for(int i=1;i<objectCount-1;i++){
-                    GObject *obj = container->object(indicesArray[i]);
-                    if(isX)
-                        obj->move(figureSizes[ indicesArray[0] ] + i*difference - figureSizes[ indicesArray[i] ],0);
-                    else
-                        obj->move(0,figureSizes[ indicesArray[0] ] + i*difference - figureSizes[ indicesArray[i] ]);
-                }
-            else{
-                int prevObjIndex = 0;
-                for(int i=1;i<objectCount-1;i++){
-                    GObject *obj = container->object(indicesArray[i]);
-                    if(isX)
-                        obj->move(container->object(indicesArray[prevObjIndex])->boundingRect().right() + difference - obj->boundingRect().x(),0);
-                    else
-                        obj->move(0,container->object(indicesArray[prevObjIndex])->boundingRect().bottom() + difference - obj->boundingRect().y());
-                    prevObjIndex = i;
-                }
-            }
-
-            // что бы рамка изменила свой размер имитируем отпускание кнопки мыши по ней
-            selection->mouseRelease(Qt::LeftButton,rect.center(),Qt::NoModifier);
-            // вызываем перерисовку и сохраняем в историю изменений
-            selection->emitChanged();
-            selection->emitStateChanged("Align");
         }
 
     private:
@@ -479,13 +334,12 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
         GSRInterface* selection;
         RPWInterface* realPainter;
+        RealPaintWidget* realPaintWidget;
         GContainer* container;
-
-        QSignalMapper *alignSignalMapper;
-        QSignalMapper *distributeSignalMapper;
 
         QSignalMapper *logicSignalMapper;
 
 };
+
 
 #endif /* __LogicOperations_H__ */
