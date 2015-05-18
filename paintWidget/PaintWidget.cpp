@@ -848,7 +848,7 @@ void PaintWidget::pasteFromClipboard()
 
 	for( int i = 0; i < countFrames; i++ )
 	{
-		if( frames[i] != painter.currentFrame )
+        if( frames[i] != painter.currentFrame )
 			o->addFrame(frames[i], false);
 	}
 

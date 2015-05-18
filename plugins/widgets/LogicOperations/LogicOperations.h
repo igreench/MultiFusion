@@ -166,26 +166,23 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
             for (int i = objectCount - 1; i >= 0; i--) {
                 GObject *obj = container->object(i);
                 QPolygonF poly = obj->points(0);
-                //obj->de points(0).clear();
-
-                //obj->deleteFrame(0);
-
-                //container->remove(i);
 
                 int countSplinePoints = ( ( poly.size() - 1 ) / 3 ) * 3;
 
-                //GObject *newObj;
-                for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
-                    obj->addPoint(poly.at(j - 1).toPoint());
-                    //path.cubicTo( props.points[i], props.points[i + 1], props.points[i + 2] );
+                for( int j = obj->points(0).size() - 1; j >= 0; j--) {
+                    obj->deletePoint(j);
                 }
 
-                //obj->addFrame(0, true);
+                /*for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
+                    //obj->addPoint(poly.at(j - 1).toPoint());
+                }*/
 
                 //container->add(obj, true);
-
                 //container->add(newObj);
+                //obj->addPoint(QPoint(0, 0));
             }
+
+
 
             /*
             qDebug() << "0: " << container->objectName(0);
@@ -201,7 +198,7 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
 
             for (int i = objectCount - 1; i >= 0; i--) {
-                painter->deleteFigure(painter->layer(), i);
+                //painter->deleteFigure(painter->layer(), i);
             }
 
             /*int countLayers = painter->countLayers();
