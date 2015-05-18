@@ -170,7 +170,7 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                 int countSplinePoints = ( ( poly.size() - 1 ) / 3 ) * 3;
 
                 for( int j = obj->points(0).size() - 1; j >= 0; j--) {
-                    obj->deletePoint(j);
+                    //obj->deletePoint(j);
                 }
 
                 /*for( int j = 1; j < ( countSplinePoints + 1 ); j += 3 ) {
@@ -181,6 +181,23 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
                 //container->add(newObj);
                 //obj->addPoint(QPoint(0, 0));
             }
+
+
+            //GObject *obj = container->object(0);
+            //obj->deletePoint()
+
+            /*for( int j = obj->points(0).size() - 1; j >= 0; j--) {
+                obj->deletePoint(j);
+            }*/
+
+            /*obj->deletePoint(0);
+            obj->deletePoint(0);
+            obj->deletePoint(0);
+            obj->deletePoint(0);*/
+
+            //container->removeAll();
+            //selection->getSelected()-
+            //painter->deleteFigure(painter->layer(), 0);
 
 
 
@@ -196,10 +213,21 @@ class LogicOperations:public QWidget, public LogicOperationsInterface, public In
 
             ////////////////////
 
-
-            for (int i = objectCount - 1; i >= 0; i--) {
-                //painter->deleteFigure(painter->layer(), i);
+            int countFigures;
+            if(painter->isContainsFrame(painter->layer())) {
+                countFigures = painter->countFigures(painter->layer());
+                for (int j = countFigures - 1; j >= 0; j--) {
+                    painter->deleteFigure(painter->layer(), j);
+                }
             }
+
+
+            GObject *obj = container->object(0);
+            container->add(obj, true);
+
+            /*for (int i = objectCount - 1; i >= 0; i--) {
+                painter->deleteFigure(painter->layer(), i);
+            }*/
 
             /*int countLayers = painter->countLayers();
             int countFigures;
