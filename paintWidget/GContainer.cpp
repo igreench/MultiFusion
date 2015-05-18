@@ -358,7 +358,7 @@ QRectF GContainer::boundingRect()
 
 bool GContainer::deletePoint( int index )
 {
-	if( !isEditable() || ( countVisibleObjects() > 1 ) )
+    if( !isEditable() /* || ( countVisibleObjects() > 1 ) */)
 		return -1;
 
 	return objects[0]->deletePoint( index );
@@ -622,4 +622,8 @@ int GContainer::countVisibleObjects() const
 		if( objects[i]->isVisible() ) count++;
 
 	return count;
+}
+
+QVector < GObject* > * GContainer::getObjects() {
+    return &objects;
 }

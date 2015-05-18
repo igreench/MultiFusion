@@ -535,6 +535,8 @@ class GContainer:public GObject
 		*/
 		virtual void load( QDataStream &stream );
 
+        QVector < GObject* > * getObjects();
+
 	protected:
 		QVector< GObject* > objects;
 

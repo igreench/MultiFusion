@@ -132,6 +132,14 @@ class RealPaintWidget:public RPWInterface
 		virtual void mouseDoubleClickEvent( QMouseEvent * event );
 		virtual void resizeEvent( QResizeEvent * event );
 
+        //QVector <GLayer * > getLayers();
+
+       // int getCurrentLayer();
+
+       //GSelectionRect getSelect();
+
+        virtual void addNewObject(GObject *o, bool realChild = false );
+
 	public slots:
 		/**
 		* Появление окна с характеристиками объекта

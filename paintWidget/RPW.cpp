@@ -314,6 +314,12 @@ void RealPaintWidget::paintEvent( QPaintEvent * event )
 	}
 
 
+
+
+}
+
+void RealPaintWidget::addNewObject(GObject *o, bool realChild) {
+    layers[currentLayer]->add(o, realChild);
 }
 
 void RealPaintWidget::mousePressEvent( QMouseEvent *event )
@@ -682,3 +688,16 @@ void RealPaintWidget::setSelectionRect(QRect sr)
 {
 
 }
+/*
+QVector <GLayer * > RealPaintWidget::getLayers() {
+    return this->layers;
+}
+
+int RealPaintWidget::getCurrentLayer() {
+    return this->currentLayer;
+}
+
+GSelectionRect RealPaintWidget::getSelect() {
+    return this->selection;
+}
+*/
